@@ -11,15 +11,6 @@ from .gen_stores import KeystoreGenerator
 @click.option('-d', '--dir', help='Directory to put artifacts in.',
               default='./artifact/')
 def app(sa_names, dir):
-    """
-    Create the needed certificates and certificate stores.
-
-    Args:
-        sa_names: List of IP addresses or DNS addresses to be used as
-                `Subject Alternative Names` for end-entity certificates. 
-        dir: Directory where artifacts are put: Default: `./artifact/`
-    """
-
     os.makedirs(dir)
 
     if len(sa_names) < 1:

@@ -1,6 +1,6 @@
 # Exhibitor TLS Artifact Generation
 
-Generate `TLS` artifacts to be used by `Admin Router` and `Exhibitor`. The
+Generate `TLS` artifacts used by `Admin Router` and `Exhibitor`. The
 created artifacts, if placed in specific locations on a`DC/OS Enterprise`
 master node, secure the `Exhibitor` ensemble. This is achieved by making
 each `Exhibitor` node talk `TLS` to the other using the artifacts generated
@@ -9,7 +9,7 @@ that can pick up these artifacts and talk to the ensemble.
 
 * [System Requirements](#system-requirements)
 * [Installation](#installation)
-* [Script Usage](#scipt-usage)
+* [Script Usage](#script-usage)
 * [Artifact Usage](#artifact-usage)
 * [Tests](#tests)
 

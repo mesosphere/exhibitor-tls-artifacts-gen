@@ -1,7 +1,6 @@
 import datetime
 import os
 import ipaddress
-import IPy
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
@@ -16,13 +15,14 @@ class CertificateWrapper:
     Wrapper that makes it easier to work with `x509` certificates.
     """
 
-    def __init__(self, cert_path, key_path, password):
+    def __init__(self, cert_path, key_path):
         # Open certificates and keys and store the relevant information.
         with open(cert_path, "rb") as f:
             cert_data = f.read()
             self.cert = x509.load_pem_x509_certificate(
                 cert_data,
-                default_backend())
+                default_backend()
+            )
 
         self.cert_path = cert_path
 
@@ -30,11 +30,11 @@ class CertificateWrapper:
             key_data = f.read()
             self.key = serialization.load_pem_private_key(
                 data=bytes(key_data),
-                password=password,
-                backend=default_backend())
+                password=None,
+                backend=default_backend()
+            )
 
         self.key_path = key_path
-        self.password = password
 
 
 class CertificateGenerator:
@@ -42,8 +42,8 @@ class CertificateGenerator:
     Generate `x509` certificates in `pem` format.
     """
 
-    def __init__(self, artifact_dir, country=u'US', state=u'CA',
-                 locality=u'San Francisco', organization=u'Mesosphere'):
+    def __init__(self, artifact_dir, country='US', state='CA',
+                 locality='San Francisco', organization='Mesosphere'):
         # This adds trailing / to the path
         self.artifact_dir = os.path.join(artifact_dir, '')
         self.country = country
@@ -51,16 +51,13 @@ class CertificateGenerator:
         self.locality = locality
         self.organization = organization
 
-    def get_cert(self, cert_name=u'entity', cert_pass=b'changeme',
-                 sa_names=[u'localhost'], issuer=None):
+    def get_cert(self, cert_name='entity', sa_names=None, issuer=None):
         """
         Creates self signed CA certificates or end-entity certificates.
 
         Args:
             cert_name: Name of the certificate without `-cert` in the name or
             the `.pem` suffix.
-            cert_pass: Password to be used for the certificate key. Default:
-            `changeme`.
             sa_names: List of IP addresses or DNS addresses to be used as
             `Subject Alternative Names` for the certificate. Default:
             `['localhost']`.
@@ -77,12 +74,11 @@ class CertificateGenerator:
             backend=default_backend()
         )
 
-        with open(key_path, "wb") as f:
+        with open(key_path, 'wb') as f:
             f.write(cert_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.BestAvailableEncryption(
-                    cert_pass),
+                encryption_algorithm=serialization.NoEncryption(),
             ))
 
         cert_subject = x509.Name([
@@ -92,6 +88,9 @@ class CertificateGenerator:
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, self.organization),
             x509.NameAttribute(NameOID.COMMON_NAME, cert_name),
         ])
+
+        if sa_names is None:
+            sa_names = ['localhost']
 
         if issuer is not None:
             cert_issuer = issuer.cert.subject
@@ -123,13 +122,12 @@ class CertificateGenerator:
         converted_names = []
         for name in sa_names:
             try:
-                IPy.IP(name)
                 converted_names.append(
                     x509.IPAddress(
                         ipaddress.ip_address(name)
                     )
                 )
-            except Exception:
+            except ValueError:
                 converted_names.append(x509.DNSName(name))
 
         cert = cert.add_extension(
@@ -142,4 +140,4 @@ class CertificateGenerator:
         with open(cert_path, 'wb') as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
 
-        return CertificateWrapper(cert_path, key_path, cert_pass)
+        return CertificateWrapper(cert_path, key_path)

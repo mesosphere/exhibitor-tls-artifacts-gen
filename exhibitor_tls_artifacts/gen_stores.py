@@ -15,8 +15,8 @@ class KeystoreGenerator:
         # Directory where the artifacts, certificates are stored.
         self.artifact_dir = os.path.join(artifact_dir, '')
 
-    def create_truststore(self, trusted_cert_paths,
-                          name=u'truststore', password=u'changeme'):
+    def create_truststore(self, trusted_cert_paths, name='truststore',
+                          password='changeme'):
         """
         Generate `jks` truststore.
 
@@ -26,8 +26,8 @@ class KeystoreGenerator:
             name: Name of the truststore without the `.jks` extension. Default:
             `truststore`.
             password: Password to be used for the keystore. Default: `changeme`.
-        
-        Returns: 
+
+        Returns:
             Path to the created truststore.
         """
         store_path = self.artifact_dir + name + '.jks'
@@ -54,15 +54,15 @@ class KeystoreGenerator:
             stdout, stderr = proc.communicate()
             if proc.wait() != 0:
                 raise Exception('{}{}'.format(
-                    stdout.decode('utf-8'),
-                    stderr.decode('utf-8')
+                    stdout.decode(),
+                    stderr.decode()
                 ))
 
         return store_path
 
-    def create_entitystore(self, cert_path, key_path, key_password,
-                           chain=False, store_name=u'entitystore',
-                           store_password=u'changeme'):
+    def create_entitystore(self, cert_path, key_path, chain=False,
+                           store_name='entitystore',
+                           store_password='changeme'):
         """
         Generate `jks` entitystore to be used by a specific entity (server or
         client).
@@ -72,7 +72,6 @@ class KeystoreGenerator:
             in the keystore.
             key_path: Path to the key corresponding to the certificate in
             cert_path.
-            key_password: Password for the key in key_path.
             chain: Specifies if cert_path points to a certificate chain or not.
             Default: False
             store_name: Name of the keystore without the '.jks' extension.
@@ -100,9 +99,7 @@ class KeystoreGenerator:
             '-name',
             certificate_alias,
             '-passout',
-            'pass:' + store_password,
-            '-passin',
-            'pass:' + key_password
+            'pass:' + store_password
         ]
 
         if chain:
@@ -121,8 +118,8 @@ class KeystoreGenerator:
         stdout, stderr = proc.communicate()
         if proc.wait() != 0:
             raise Exception('{}{}'.format(
-                stdout.decode('utf-8'),
-                stderr.decode('utf-8')
+                stdout.decode(),
+                stderr.decode()
             ))
 
         keystore_cmd = [
@@ -152,8 +149,8 @@ class KeystoreGenerator:
         stdout, stderr = proc.communicate()
         if proc.wait() != 0:
             raise Exception('{}{}'.format(
-                stdout.decode('utf-8'),
-                stderr.decode('utf-8')
+                stdout.decode(),
+                stderr.decode()
             ))
 
         try:

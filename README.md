@@ -40,10 +40,10 @@ pip install --editable .
 
 ## Script Usage
 ```sh
-exhibitor-tls-artifacts [OPTIONS] [SA_NAMES]...
+exhibitor-tls-artifacts [OPTIONS] [SANS]...
 
 Args:
-    SA_NAMES: Subject Alternative Names to be put in the end-entity
+    SANS: Subject Alternative Names to be put in the end-entity
               certificates. Can be DNS names or IP addresses.
 Options:
   -d, --dir TEXT  Directory to put generated artifacts in.
@@ -64,16 +64,16 @@ All artifacts are found in `./artifacts/` or in the user specified directory.
 * `serverstore.jks`
     * Contains `server-cert.pem` and `server-key.pem`.
     * Is used by `Exhibitor` instances to present server certificates.
-* `server-cert.pem` and `server-key.pem`
-    * Are not used and can be safely deleted.
 * `truststore.jks`
     * Contains `root-cert.pem`.
     * Is used by `Exhibitor` to verify presented certificates (client and
     server).
 * `root-cert.pem`
     * Is used by `Admin Router` to verify `Exhibitor` server certificates.
-* `root-cert.pem`
-    * Is not used and can be safely deleted.
 
 ## Tests
 <!-- TODO: Fill out section after writing tests -->
+
+## TODO
+
+* Change `Python` version from `3.6` to `3.4` is possible.

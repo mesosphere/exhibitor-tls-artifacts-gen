@@ -27,9 +27,9 @@ environment using `virtualenv`.
     pip install virtualenv
     ```
 
-2) Create a virtual environment (`Python3.6` is required) :
+2) Create a virtual environment (`Python3.4` is required) :
     ```sh
-    virualenv -p python3.6 <name of environment>
+    virualenv -p python3.4 <name of environment>
     ```
 
 To install the `exhibitor-tls-artifacts` package, from the same directory as
@@ -73,7 +73,3 @@ All artifacts are found in `./artifacts/` or in the user specified directory.
 
 ## Tests
 <!-- TODO: Fill out section after writing tests -->
-
-## TODO
-
-* Change `Python` version from `3.6` to `3.4` is possible.

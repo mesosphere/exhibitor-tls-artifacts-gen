@@ -6,7 +6,7 @@ python:
     - "3.4"
 
 env:
-	- TEST_DIR="tests/"
+    - TEST_DIR="tests/"
 
 before_install:
     - "travis_retry pip install --upgrade pip"

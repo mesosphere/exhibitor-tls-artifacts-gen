@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/rdeliallisi/exhibitor-tls-artifacts-gen.svg?token=zXsAbFGfuomQQchMVUL3&branch=master)](https://travis-ci.com/rdeliallisi/exhibitor-tls-artifacts-gen)
+
 # Exhibitor TLS Artifact Generation
 
 Generate `TLS` artifacts used by `Admin Router` and `Exhibitor`. The

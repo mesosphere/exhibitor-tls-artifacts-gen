@@ -14,7 +14,7 @@ def app(sans, dir):
     os.makedirs(dir)
 
     if len(sans) < 1:
-        sans = ['localhost']
+        sans = ['localhost', '127.0.0.1']
 
     try:
         cert_generator = CertificateGenerator(dir)

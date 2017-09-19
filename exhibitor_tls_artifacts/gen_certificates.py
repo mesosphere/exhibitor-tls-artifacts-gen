@@ -24,7 +24,7 @@ class CertificateGenerator:
         self.locality = locality
         self.organization = organization
 
-    def __load_cert(self, cert_path):
+    def load_cert(self, cert_path):
         with open(cert_path, "rb") as f:
             cert_data = f.read()
             cert = x509.load_pem_x509_certificate(
@@ -38,7 +38,7 @@ class CertificateGenerator:
         with open(cert_path, 'wb') as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
 
-    def __load_key(self, key_path, password=None):
+    def load_key(self, key_path, password=None):
         with open(key_path, "rb") as f:
             key_data = f.read()
             key = serialization.load_pem_private_key(
@@ -53,13 +53,13 @@ class CertificateGenerator:
         if password is None:
             encryption = serialization.NoEncryption()
         else:
-            encryption = serialization.BestAvailableEncryption(password),
+            encryption = serialization.BestAvailableEncryption(password)
 
         with open(key_path, 'wb') as f:
             f.write(key.private_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=encryption,
+                encryption_algorithm=encryption
             ))
 
     def get_cert(self, cert_name='entity', key_pass=None, sa_names=None,
@@ -102,11 +102,11 @@ class CertificateGenerator:
             sa_names = ['localhost']
 
         if issuer is not None:
-            issuer_cert = self.__load_cert(issuer[0])
+            issuer_cert = self.load_cert(issuer[0])
             cert_issuer_subject = issuer_cert.subject
-            issuer_key = self.__load_key(issuer[1],
-                                         issuer[2] if len(issuer) > 2
-                                         else None)
+            issuer_key = self.load_key(issuer[1],
+                                       issuer[2] if len(issuer) > 2
+                                       else None)
         else:
             cert_issuer_subject = cert_subject
             issuer_key = cert_key

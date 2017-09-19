@@ -18,25 +18,28 @@ def app(sans, dir):
 
     try:
         cert_generator = CertificateGenerator(dir)
-        root = cert_generator.get_cert(cert_name='root')
-        client = cert_generator.get_cert(cert_name='client', issuer=root,
-                                         sa_names=sans)
-        server = cert_generator.get_cert(cert_name='server', issuer=root,
-                                         sa_names=sans)
+        root_cert_path, root_key_path = cert_generator.get_cert(
+            cert_name='root')
+        client_cert_path, client_key_path = cert_generator.get_cert(
+            cert_name='client', issuer=(root_cert_path, root_key_path),
+            sa_names=sans)
+        server_cert_path, server_key_path = cert_generator.get_cert(
+            cert_name='server', issuer=(root_cert_path, root_key_path),
+            sa_names=sans)
 
         store_generator = KeystoreGenerator(dir)
-        store_generator.create_truststore([root.cert_path])
-        store_generator.create_entitystore(client.cert_path,
-                                           client.key_path,
+        store_generator.create_truststore([root_cert_path])
+        store_generator.create_entitystore(client_cert_path,
+                                           client_key_path,
                                            store_name='clientstore')
-        store_generator.create_entitystore(server.cert_path,
-                                           server.key_path,
+        store_generator.create_entitystore(server_cert_path,
+                                           server_key_path,
                                            store_name='serverstore')
 
         # Remove not needed files
-        os.remove(server.cert_path)
-        os.remove(server.key_path)
-        os.remove(root.key_path)
+        os.remove(server_cert_path)
+        os.remove(server_key_path)
+        os.remove(root_key_path)
 
     except Exception as e:
         if os.path.exists(dir):

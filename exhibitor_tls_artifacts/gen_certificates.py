@@ -10,33 +10,6 @@ from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
 
 
-class CertificateWrapper:
-    """
-    Wrapper that makes it easier to work with `x509` certificates.
-    """
-
-    def __init__(self, cert_path, key_path):
-        # Open certificates and keys and store the relevant information.
-        with open(cert_path, "rb") as f:
-            cert_data = f.read()
-            self.cert = x509.load_pem_x509_certificate(
-                cert_data,
-                default_backend()
-            )
-
-        self.cert_path = cert_path
-
-        with open(key_path, "rb") as f:
-            key_data = f.read()
-            self.key = serialization.load_pem_private_key(
-                data=bytes(key_data),
-                password=None,
-                backend=default_backend()
-            )
-
-        self.key_path = key_path
-
-
 class CertificateGenerator:
     """
     Generate `x509` certificates in `pem` format.
@@ -51,19 +24,60 @@ class CertificateGenerator:
         self.locality = locality
         self.organization = organization
 
-    def get_cert(self, cert_name='entity', sa_names=None, issuer=None):
+    def __load_cert(self, cert_path):
+        with open(cert_path, "rb") as f:
+            cert_data = f.read()
+            cert = x509.load_pem_x509_certificate(
+                cert_data,
+                default_backend()
+            )
+
+        return cert
+
+    def __store_cert(self, cert, cert_path):
+        with open(cert_path, 'wb') as f:
+            f.write(cert.public_bytes(serialization.Encoding.PEM))
+
+    def __load_key(self, key_path, password=None):
+        with open(key_path, "rb") as f:
+            key_data = f.read()
+            key = serialization.load_pem_private_key(
+                data=bytes(key_data),
+                password=password,
+                backend=default_backend()
+            )
+
+        return key
+
+    def __store_key(self, key, key_path, password=None):
+        if password is None:
+            encryption = serialization.NoEncryption()
+        else:
+            encryption = serialization.BestAvailableEncryption(password),
+
+        with open(key_path, 'wb') as f:
+            f.write(key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=encryption,
+            ))
+
+    def get_cert(self, cert_name='entity', key_pass=None, sa_names=None,
+                 issuer=None):
         """
         Creates self signed CA certificates or end-entity certificates.
 
         Args:
             cert_name: Name of the certificate without `-cert` in the name or
             the `.pem` suffix.
+            key_pass: Password to use for the certificate key. Default:
+            `None`.
             sa_names: List of IP addresses or DNS addresses to be used as
             `Subject Alternative Names` for the certificate. Default:
-            `['localhost']`.
-            issuer: CertificateWrapper containing the issuing certificate. If
-            none is provided the certificate will be self signed. Default:
             `None`.
+            issuer: (Certificate, Key, Password) triple for the issuer.
+            If none is provided the certificate will be self signed.
+            Default: `None`.
         """
         cert_path = self.artifact_dir + cert_name + '-cert.pem'
         key_path = self.artifact_dir + cert_name + '-key.pem'
@@ -74,12 +88,7 @@ class CertificateGenerator:
             backend=default_backend()
         )
 
-        with open(key_path, 'wb') as f:
-            f.write(cert_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption(),
-            ))
+        self.__store_key(cert_key, key_path, key_pass)
 
         cert_subject = x509.Name([
             x509.NameAttribute(NameOID.COUNTRY_NAME, self.country),
@@ -93,16 +102,19 @@ class CertificateGenerator:
             sa_names = ['localhost']
 
         if issuer is not None:
-            cert_issuer = issuer.cert.subject
-            issuer_key = issuer.key
+            issuer_cert = self.__load_cert(issuer[0])
+            cert_issuer_subject = issuer_cert.subject
+            issuer_key = self.__load_key(issuer[1],
+                                         issuer[2] if len(issuer) > 2
+                                         else None)
         else:
-            cert_issuer = cert_subject
+            cert_issuer_subject = cert_subject
             issuer_key = cert_key
 
         cert = x509.CertificateBuilder().subject_name(
             cert_subject
         ).issuer_name(
-            cert_issuer
+            cert_issuer_subject
         ).public_key(
             cert_key.public_key()
         ).serial_number(
@@ -137,7 +149,6 @@ class CertificateGenerator:
 
         cert = cert.sign(issuer_key, hashes.SHA256(), default_backend())
 
-        with open(cert_path, 'wb') as f:
-            f.write(cert.public_bytes(serialization.Encoding.PEM))
+        self.__store_cert(cert, cert_path)
 
-        return CertificateWrapper(cert_path, key_path)
+        return (cert_path, key_path)

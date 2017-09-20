@@ -125,11 +125,11 @@ class CertificateGenerator:
             datetime.datetime.utcnow() + datetime.timedelta(days=10 * 365)
         )
 
-        if issuer is None:
-            cert = cert.add_extension(
-                x509.BasicConstraints(ca=True, path_length=None),
-                critical=True,
-            )
+        cert = cert.add_extension(
+            x509.BasicConstraints(ca=True if issuer is None else False,
+                                  path_length=None),
+            critical=True,
+        )
 
         converted_names = []
         for name in sa_names:

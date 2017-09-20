@@ -1,5 +1,4 @@
 import pytest
-import os
 import ipaddress
 
 from tempfile import TemporaryDirectory

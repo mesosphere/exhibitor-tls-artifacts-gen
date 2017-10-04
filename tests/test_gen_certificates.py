@@ -49,7 +49,7 @@ class TestGenCertificates:
             self.__verify_cert_properties(cert, ['localhost'], [], True)
             self.__verify_cert_signature(cert, key)
 
-    @pytest.mark.parametrize('key_pass', [None, b'changeme'])
+    @pytest.mark.parametrize('key_pass', [None, b'not-relevant-for-security'])
     def test_ca_certificate(self, key_pass):
         with TemporaryDirectory() as test_dir:
             gen = CertificateGenerator(artifact_dir=test_dir)
@@ -68,8 +68,8 @@ class TestGenCertificates:
             self.__verify_cert_properties(cert, dns_names, ip_addr, True)
             self.__verify_cert_signature(cert, key)
 
-    @pytest.mark.parametrize('entity_pass', [None, b'changeme'])
-    @pytest.mark.parametrize('issuer_pass', [None, b'changeme'])
+    @pytest.mark.parametrize('entity_pass', [None, b'not-relevant-for-security'])
+    @pytest.mark.parametrize('issuer_pass', [None, b'not-relevant-for-security'])
     def test_no_ca_certificate(self, entity_pass, issuer_pass):
         with TemporaryDirectory() as test_dir:
             gen = CertificateGenerator(artifact_dir=test_dir)

@@ -16,7 +16,7 @@ class KeystoreGenerator:
         self.artifact_dir = os.path.join(artifact_dir, '')
 
     def create_truststore(self, trusted_cert_paths, name='truststore',
-                          password='changeme'):
+                          password='not-relevant-for-security'):
         """
         Generate `jks` truststore.
 
@@ -25,7 +25,7 @@ class KeystoreGenerator:
             the truststore.
             name: Name of the truststore without the `.jks` extension. Default:
             `truststore`.
-            password: Password to be used for the keystore. Default: `changeme`.
+            password: Password to be used for the keystore. Default: `not-relevant-for-security`.
 
         Returns:
             Path to the created truststore.
@@ -62,7 +62,7 @@ class KeystoreGenerator:
 
     def create_entitystore(self, cert_path, key_path, chain=False,
                            store_name='entitystore',
-                           store_password='changeme'):
+                           store_password='not-relevant-for-security'):
         """
         Generate `jks` entitystore to be used by a specific entity (server or
         client).
@@ -77,7 +77,7 @@ class KeystoreGenerator:
             store_name: Name of the keystore without the '.jks' extension.
             Default: `entitystore`.
             store_password: Password to be used for the keystore. Default:
-            `changeme`.
+            `not-relevant-for-security`.
 
         Returns:
             Path to the created keystore.

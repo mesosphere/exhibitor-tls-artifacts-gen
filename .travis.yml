@@ -15,4 +15,4 @@ install:
     - "travis_retry pip install --upgrade --editable ."
 
 script:
-    - 'pytest -vvv -s "$TEST_DIR"'
+    - 'pytest -vvv "$TEST_DIR"'

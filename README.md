@@ -81,5 +81,5 @@ To run the tests first follow the instructions under
 [Installation](#installation) to get all the required dependencies. Then run:
 
 ```sh
-pytest
+pytest tests/
 ```

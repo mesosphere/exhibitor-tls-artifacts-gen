@@ -21,6 +21,7 @@ that can pick up these artifacts and talk to the ensemble.
 2) `OpenSSL 1.x.y` must be installed.
 
 ## Installation
+
 To keep your global python environment clean, we suggest creating a virtual
 environment using `virtualenv`.
 
@@ -41,6 +42,7 @@ pip install --editable .
 ```
 
 ## Script Usage
+
 ```sh
 exhibitor-tls-artifacts [OPTIONS] [SANS]...
 
@@ -74,4 +76,10 @@ All artifacts are found in `./artifacts/` or in the user specified directory.
     * Is used by `Admin Router` to verify `Exhibitor` server certificates.
 
 ## Tests
-<!-- TODO: Fill out section after writing tests -->
+
+To run the tests first follow the instructions under
+[Installation](#installation) to get all the required dependencies. Then run:
+
+```sh
+pytest
+```

@@ -2,6 +2,8 @@ import datetime
 import os
 import ipaddress
 
+from pathlib import Path
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -35,6 +37,7 @@ class CertificateGenerator:
         return cert
 
     def __store_cert(self, cert, cert_path):
+        os.makedirs(cert_path.parent, mode=0o700, exist_ok=True)
         with open(cert_path, 'wb') as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
 
@@ -50,6 +53,7 @@ class CertificateGenerator:
         return key
 
     def __store_key(self, key, key_path, password=None):
+        os.makedirs(key_path.parent, mode=0o700, exist_ok=True)
         if password is None:
             encryption = serialization.NoEncryption()
         else:
@@ -62,7 +66,9 @@ class CertificateGenerator:
                 encryption_algorithm=encryption
             ))
 
-    def get_cert(self, cert_name='entity', key_pass=None, sa_names=None,
+        os.chmod(key_path, 0o600)
+
+    def get_cert(self, cert_name='entity', node_cert_path='', key_pass=None, sa_names=None,
                  issuer=None):
         """
         Creates self signed CA certificates or end-entity certificates.
@@ -70,6 +76,7 @@ class CertificateGenerator:
         Args:
             cert_name: Name of the certificate without `-cert` in the name or
             the `.pem` suffix.
+            node_cert_path: The node specific directory for to store the cert
             key_pass: Password to use for the certificate key. Default:
             `None`.
             sa_names: List of IP addresses or DNS addresses to be used as
@@ -79,8 +86,14 @@ class CertificateGenerator:
             If none is provided the certificate will be self signed.
             Default: `None`.
         """
-        cert_path = self.artifact_dir + cert_name + '-cert.pem'
-        key_path = self.artifact_dir + cert_name + '-key.pem'
+
+        cert_file = cert_name + '-cert.pem'
+        key_file = cert_name + '-key.pem'
+
+        base_path = Path(self.artifact_dir) / node_cert_path
+
+        cert_path = base_path / cert_file
+        key_path = base_path / key_file
 
         cert_key = rsa.generate_private_key(
             public_exponent=65537,
@@ -151,4 +164,4 @@ class CertificateGenerator:
 
         self.__store_cert(cert, cert_path)
 
-        return (cert_path, key_path)
+        return cert_path, key_path

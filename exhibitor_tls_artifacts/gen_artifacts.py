@@ -1,44 +1,61 @@
 import click
 import os
 import shutil
+import sys
+from pathlib import Path
 
 from .gen_certificates import CertificateGenerator
 from .gen_stores import KeystoreGenerator
 
 
 @click.command()
-@click.argument('sans', nargs=-1)
+@click.option('--nodes', help='Comma separated list of master node ip addresses.', required=True)
 @click.option('-d', '--dir', help='Directory to put artifacts in.',
               default='./artifacts/')
-def app(sans, dir):
+def app(nodes, dir):
+    dir = Path(dir)
+    if dir.exists():
+        print('{} already exists'.format(dir))
+        sys.exit(1)
+
+    # Create artifact directory
     os.makedirs(dir)
 
-    if len(sans) < 1:
-        sans = ['localhost', '127.0.0.1']
+    nodes = nodes.split(',')
+
+    # Admin router (nginx) requires `exhibitor` to exist as a SAN on all nodes
+    # due to peculiarity in the nginx TLS client.
+    # https://stackoverflow.com/questions/44828550/nginx-ssl-upstream-verify-fail
+    # https://trac.nginx.org/nginx/ticket/1307
+    sans = ['localhost', 'exhibitor', '127.0.0.1']
 
     try:
         cert_generator = CertificateGenerator(dir)
         root_cert_path, root_key_path = cert_generator.get_cert(
             cert_name='root')
-        client_cert_path, client_key_path = cert_generator.get_cert(
-            cert_name='client', issuer=(root_cert_path, root_key_path),
-            sa_names=sans)
-        server_cert_path, server_key_path = cert_generator.get_cert(
-            cert_name='server', issuer=(root_cert_path, root_key_path),
-            sa_names=sans)
-
         store_generator = KeystoreGenerator(dir)
-        store_generator.create_truststore([root_cert_path])
-        store_generator.create_entitystore(client_cert_path,
-                                           client_key_path,
-                                           store_name='clientstore')
-        store_generator.create_entitystore(server_cert_path,
-                                           server_key_path,
-                                           store_name='serverstore')
+        root_truststore = store_generator.create_truststore([root_cert_path])
 
-        # Remove not needed files
-        os.remove(server_cert_path)
-        os.remove(server_key_path)
+        for node in nodes:
+            node_path_name = 'node_' + node.replace('.', '_')
+            client_cert_path, client_key_path = cert_generator.get_cert(
+                cert_name='client', node_cert_path=node_path_name, issuer=(root_cert_path, root_key_path),
+                sa_names=sans + [node])
+            server_cert_path, server_key_path = cert_generator.get_cert(
+                cert_name='server', node_cert_path=node_path_name, issuer=(root_cert_path, root_key_path),
+                sa_names=sans + [node])
+
+            store_generator.create_entitystore(client_cert_path,
+                                               client_key_path,
+                                               store_name='clientstore', node_cert_path=node_path_name)
+            store_generator.create_entitystore(server_cert_path,
+                                               server_key_path,
+                                               store_name='serverstore', node_cert_path=node_path_name)
+            os.remove(server_cert_path)
+            os.remove(server_key_path)
+
+            shutil.copy(root_cert_path, client_cert_path.parent)
+            shutil.copy(root_truststore, client_cert_path.parent)
         os.remove(root_key_path)
 
     except Exception as e:

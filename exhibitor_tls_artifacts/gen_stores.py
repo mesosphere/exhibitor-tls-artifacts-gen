@@ -1,5 +1,6 @@
 import os
 import logging
+from pathlib import Path
 
 from subprocess import Popen, PIPE
 
@@ -37,12 +38,12 @@ class KeystoreGenerator:
             cmd = [
                 'keytool',
                 '-keystore',
-                store_path,
+                str(store_path),
                 '-import',
                 '-alias',
                 alias,
                 '-file',
-                cert_path,
+                str(cert_path),
                 '-trustcacerts',
                 '-storepass',
                 password,
@@ -58,9 +59,10 @@ class KeystoreGenerator:
                     stderr.decode()
                 ))
 
+        os.chmod(store_path, 0o600)
         return store_path
 
-    def create_entitystore(self, cert_path, key_path, chain=False,
+    def create_entitystore(self, cert_path, key_path, node_cert_path='', chain=False,
                            store_name='entitystore',
                            store_password='not-relevant-for-security'):
         """
@@ -72,6 +74,7 @@ class KeystoreGenerator:
             in the keystore.
             key_path: Path to the key corresponding to the certificate in
             cert_path.
+            node_cert_path: the node directory for which to store trust databases
             chain: Specifies if cert_path points to a certificate chain or not.
             Default: False
             store_name: Name of the keystore without the '.jks' extension.
@@ -82,20 +85,23 @@ class KeystoreGenerator:
         Returns:
             Path to the created keystore.
         """
-        java_store_path = self.artifact_dir + '/' + store_name + '.jks'
-        pkcs12_store_path = java_store_path + '.p12'
-        certificate_alias = os.path.splitext(os.path.basename(cert_path))[0]
+
+        java_store_file = store_name + '.jks'
+        base_path = Path(self.artifact_dir) / node_cert_path
+        java_store_path = base_path / java_store_file
+        pkcs12_store_path = Path(str(java_store_path) + '.p12')  # trust.jks.p12
+        certificate_alias = cert_path.name.split('.')[0]
 
         pkcs12_cmd = [
             'openssl',
             'pkcs12',
             '-export',
             '-in',
-            cert_path,
+            str(cert_path),
             '-inkey',
-            key_path,
+            str(key_path),
             '-out',
-            pkcs12_store_path,
+            str(pkcs12_store_path),
             '-name',
             certificate_alias,
             '-passout',
@@ -105,7 +111,7 @@ class KeystoreGenerator:
         if chain:
             pkcs12_cmd.extend([
                 '-CAfile',
-                cert_path,
+                str(cert_path),
                 '-chain'
             ])
 
@@ -126,9 +132,9 @@ class KeystoreGenerator:
             'keytool',
             '-importkeystore',
             '-destkeystore',
-            java_store_path,
+            str(java_store_path),
             '-srckeystore',
-            pkcs12_store_path,
+            str(pkcs12_store_path),
             '-srcstoretype',
             'pkcs12',
             '-alias',
@@ -142,8 +148,7 @@ class KeystoreGenerator:
 
         log.info('Creating jks {} keystore: {}'.format(
             store_name,
-            ' '.join(pkcs12_cmd)
-        ))
+            ' '.join(pkcs12_cmd)))
 
         proc = Popen(keystore_cmd, shell=False, stdout=PIPE, stderr=PIPE)
         stdout, stderr = proc.communicate()
@@ -161,4 +166,5 @@ class KeystoreGenerator:
                 ' '.join(pkcs12_cmd)
             ))
 
+        os.chmod(java_store_path, 0o600)
         return java_store_path

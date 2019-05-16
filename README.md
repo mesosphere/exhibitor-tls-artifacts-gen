@@ -44,20 +44,18 @@ pip install --editable .
 ## Script Usage
 
 ```sh
-exhibitor-tls-artifacts [OPTIONS] [SANS]...
+Usage: exhibitor-tls-artifacts [OPTIONS]
 
-Args:
-    SANS: Subject Alternative Names to be put in the end-entity
-              certificates. Can be DNS names or IP addresses.
 Options:
-  -d, --dir TEXT  Directory to put generated artifacts in.
-                  Default: ./artifacts/ .
+  --nodes TEXT    Comma separated list of master node ip addresses.
+  -d, --dir TEXT  Directory to put artifacts in.
   --help          Show this message and exit.
+
 ```
 
 ## Artifact Usage
 
-All artifacts are found in `./artifacts/` or in the user specified directory.
+All artifacts are found in `./artifacts/node_IP` or in the user specified directory.
 
 * `clientstore.jks`
     * Contains `client-cert.pem` and `client-key.pem`.

@@ -9,19 +9,26 @@ from .gen_stores import KeystoreGenerator
 
 
 @click.command()
-@click.option('--nodes', help='Comma separated list of master node ip addresses.', required=True)
+@click.argument('nodes', nargs=-1)
 @click.option('-d', '--dir', help='Directory to put artifacts in.',
               default='./artifacts/')
 def app(nodes, dir):
+    """
+    Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
+    of a space seperated list of master ip addresses. See
+    https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
+    """
     dir = Path(dir)
     if dir.exists():
-        print('{} already exists'.format(dir))
+        print('{} already exists.'.format(dir))
+        sys.exit(1)
+
+    if not nodes:
+        print('No nodes have been provided.')
         sys.exit(1)
 
     # Create artifact directory
     os.makedirs(dir)
-
-    nodes = nodes.split(',')
 
     # Admin router (nginx) requires `exhibitor` to exist as a SAN on all nodes
     # due to peculiarity in the nginx TLS client.

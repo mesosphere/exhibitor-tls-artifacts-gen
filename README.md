@@ -44,13 +44,15 @@ pip install --editable .
 ## Script Usage
 
 ```sh
-Usage: exhibitor-tls-artifacts [OPTIONS]
+Usage: exhibitor-tls-artifacts [OPTIONS] [NODES]...
+
+  Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
+  of a space seperated list of master ip addresses. See
+  https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
 
 Options:
-  --nodes TEXT    Comma separated list of master node ip addresses.
   -d, --dir TEXT  Directory to put artifacts in.
   --help          Show this message and exit.
-
 ```
 
 ## Artifact Usage

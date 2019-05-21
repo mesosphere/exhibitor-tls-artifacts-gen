@@ -10,37 +10,38 @@ from .gen_stores import KeystoreGenerator
 
 @click.command()
 @click.argument('nodes', nargs=-1)
-@click.option('-d', '--dir', help='Directory to put artifacts in.',
+@click.option('-d', '--output-directory',
+              help='Directory to put artifacts in. This output_directory must not exist.',
               default='./artifacts/')
-def app(nodes, dir):
+def app(nodes, output_directory):
     """
     Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
     of a space seperated list of master ip addresses. See
     https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
     """
-    dir = Path(dir)
-    if dir.exists():
-        print('{} already exists.'.format(dir))
-        sys.exit(1)
+    output_directory = Path(output_directory)
+    if output_directory.exists():
+        raise click.BadOptionUsage(
+            message='{} already exists.'.format(output_directory))
 
     if not nodes:
-        print('No nodes have been provided.')
-        sys.exit(1)
+        raise click.BadArgumentUsage('No nodes have been provided.')
 
-    # Create artifact directory
-    os.makedirs(dir)
+    # Create artifact output_directory
+    os.makedirs(output_directory)
 
-    # Admin router (nginx) requires `exhibitor` to exist as a SAN on all nodes
-    # due to peculiarity in the nginx TLS client.
-    # https://stackoverflow.com/questions/44828550/nginx-ssl-upstream-verify-fail
-    # https://trac.nginx.org/nginx/ticket/1307
+    # Admin Router is configured to use the URI ` http://exhibitor/` to reach
+    # the local Exhibitor. To make hostname verification pass `exhibitor`
+    # needs to be present as a subject alternative name (of type `DNSname`).
+    # Also see https://trac.nginx.org/nginx/ticket/1307
+
     sans = ['localhost', 'exhibitor', '127.0.0.1']
 
     try:
-        cert_generator = CertificateGenerator(dir)
+        cert_generator = CertificateGenerator(output_directory)
         root_cert_path, root_key_path = cert_generator.get_cert(
             cert_name='root')
-        store_generator = KeystoreGenerator(dir)
+        store_generator = KeystoreGenerator(output_directory)
         root_truststore = store_generator.create_truststore([root_cert_path])
 
         for node in nodes:
@@ -66,8 +67,8 @@ def app(nodes, dir):
         os.remove(root_key_path)
 
     except Exception as e:
-        if os.path.exists(dir):
-            shutil.rmtree(dir)
+        if os.path.exists(output_directory):
+            shutil.rmtree(output_directory)
         raise e
 
 

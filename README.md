@@ -76,13 +76,15 @@ Usage: exhibitor-tls-artifacts [OPTIONS] [NODES]...
   https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
 
 Options:
-  -d, --dir TEXT  Directory to put artifacts in.
+  -d, --output-directory TEXT  Directory to put artifacts in.
   --help          Show this message and exit.
 ```
 
 ## Artifact Usage
 
-All artifacts are found in `./artifacts/node_IP` or in the user specified directory.
+All artifacts are found in `./artifacts` or in the user specified directory. This
+tool creates sub-directories for each `NODE`. If the node ip address is `10.10.10.10`,
+the artifacts for that node will land in `<artifacts_dir>/node_10_10_10_10/`.
 
 * `clientstore.jks`
     * Contains `client-cert.pem` and `client-key.pem`.

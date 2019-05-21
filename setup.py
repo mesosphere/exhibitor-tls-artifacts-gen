@@ -19,8 +19,8 @@ setup(
     description='Exhibitor TLS artifact generation script',
     long_description=LONG_DESCRIPTION,
     install_requires=INSTALL_REQUIRES,
-    author='Rubin Deliallisi',
-    author_email="rdeliallisi@mesosphere.com",
+    author='Mesosphere Inc.',
+    author_email="security@mesosphere.com",
     url="https://mesosphere.com",
     keywords='exhibitor tls artifact mesosphere',
     entry_points={

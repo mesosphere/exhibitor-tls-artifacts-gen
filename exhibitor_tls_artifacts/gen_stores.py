@@ -166,5 +166,5 @@ class KeystoreGenerator:
                 ' '.join(pkcs12_cmd)
             ))
 
-        os.chmod(java_store_path, 0o600)
+        java_store_path.chmod(0o600)
         return java_store_path

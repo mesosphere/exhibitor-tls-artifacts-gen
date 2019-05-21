@@ -16,7 +16,9 @@ class KeystoreGenerator:
         # Directory where the artifacts, certificates are stored.
         self.artifact_dir = os.path.join(artifact_dir, '')
 
-    def create_truststore(self, trusted_cert_paths, name='truststore',
+    def create_truststore(self,
+                          trusted_cert_paths,
+                          name='truststore',
                           password='not-relevant-for-security'):
         """
         Generate `jks` truststore.
@@ -36,17 +38,9 @@ class KeystoreGenerator:
         for cert_path in trusted_cert_paths:
             alias = os.path.splitext(os.path.basename(cert_path))[0]
             cmd = [
-                'keytool',
-                '-keystore',
-                str(store_path),
-                '-import',
-                '-alias',
-                alias,
-                '-file',
-                str(cert_path),
-                '-trustcacerts',
-                '-storepass',
-                password,
+                'keytool', '-keystore',
+                str(store_path), '-import', '-alias', alias, '-file',
+                str(cert_path), '-trustcacerts', '-storepass', password,
                 '-noprompt'
             ]
 
@@ -54,15 +48,16 @@ class KeystoreGenerator:
             proc = Popen(cmd, shell=False, stderr=PIPE, stdout=PIPE)
             stdout, stderr = proc.communicate()
             if proc.wait() != 0:
-                raise Exception('{}{}'.format(
-                    stdout.decode(),
-                    stderr.decode()
-                ))
+                raise Exception('{}{}'.format(stdout.decode(), stderr.decode()))
 
         os.chmod(store_path, 0o600)
         return store_path
 
-    def create_entitystore(self, cert_path, key_path, node_cert_path='', chain=False,
+    def create_entitystore(self,
+                           cert_path,
+                           key_path,
+                           node_cert_path='',
+                           chain=False,
                            store_name='entitystore',
                            store_password='not-relevant-for-security'):
         """
@@ -93,78 +88,45 @@ class KeystoreGenerator:
         certificate_alias = cert_path.name.split('.')[0]
 
         pkcs12_cmd = [
-            'openssl',
-            'pkcs12',
-            '-export',
-            '-in',
-            str(cert_path),
-            '-inkey',
-            str(key_path),
-            '-out',
-            str(pkcs12_store_path),
-            '-name',
-            certificate_alias,
-            '-passout',
+            'openssl', 'pkcs12', '-export', '-in',
+            str(cert_path), '-inkey',
+            str(key_path), '-out',
+            str(pkcs12_store_path), '-name', certificate_alias, '-passout',
             'pass:' + store_password
         ]
 
         if chain:
-            pkcs12_cmd.extend([
-                '-CAfile',
-                str(cert_path),
-                '-chain'
-            ])
+            pkcs12_cmd.extend(['-CAfile', str(cert_path), '-chain'])
 
         log.info('Creating pkcs12 {} keystore: {}'.format(
-            store_name,
-            ' '.join(pkcs12_cmd)
-        ))
+            store_name, ' '.join(pkcs12_cmd)))
 
         proc = Popen(pkcs12_cmd, shell=False, stdout=PIPE, stderr=PIPE)
         stdout, stderr = proc.communicate()
         if proc.wait() != 0:
-            raise Exception('{}{}'.format(
-                stdout.decode(),
-                stderr.decode()
-            ))
+            raise Exception('{}{}'.format(stdout.decode(), stderr.decode()))
 
         keystore_cmd = [
-            'keytool',
-            '-importkeystore',
-            '-destkeystore',
-            str(java_store_path),
-            '-srckeystore',
-            str(pkcs12_store_path),
-            '-srcstoretype',
-            'pkcs12',
-            '-alias',
-            certificate_alias,
-            '-srcstorepass',
-            store_password,
-            '-deststorepass',
-            store_password,
-            '-noprompt'
+            'keytool', '-importkeystore', '-destkeystore',
+            str(java_store_path), '-srckeystore',
+            str(pkcs12_store_path), '-srcstoretype', 'pkcs12', '-alias',
+            certificate_alias, '-srcstorepass', store_password,
+            '-deststorepass', store_password, '-noprompt'
         ]
 
-        log.info('Creating jks {} keystore: {}'.format(
-            store_name,
-            ' '.join(pkcs12_cmd)))
+        log.info('Creating jks {} keystore: {}'.format(store_name,
+                                                       ' '.join(pkcs12_cmd)))
 
         proc = Popen(keystore_cmd, shell=False, stdout=PIPE, stderr=PIPE)
         stdout, stderr = proc.communicate()
         if proc.wait() != 0:
-            raise Exception('{}{}'.format(
-                stdout.decode(),
-                stderr.decode()
-            ))
+            raise Exception('{}{}'.format(stdout.decode(), stderr.decode()))
 
         try:
             os.remove(pkcs12_store_path)
         except OSError:
             log.error('Could not remove pcks12 {} keystore: {}'.format(
-                store_name,
-                ' '.join(pkcs12_cmd)
-            ))
+                store_name, ' '.join(pkcs12_cmd)))
 
         java_store_path.chmod(0o600)
         return java_store_path

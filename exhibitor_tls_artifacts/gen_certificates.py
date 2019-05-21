@@ -17,8 +17,12 @@ class CertificateGenerator:
     Generate `x509` certificates in `pem` format.
     """
 
-    def __init__(self, artifact_dir, country='US', state='CA',
-                 locality='San Francisco', organization='Mesosphere'):
+    def __init__(self,
+                 artifact_dir,
+                 country='US',
+                 state='CA',
+                 locality='San Francisco',
+                 organization='Mesosphere'):
         # This adds trailing / to the path
         self.artifact_dir = os.path.join(artifact_dir, '')
         self.country = country
@@ -29,10 +33,7 @@ class CertificateGenerator:
     def load_cert(self, cert_path):
         with open(cert_path, "rb") as f:
             cert_data = f.read()
-            cert = x509.load_pem_x509_certificate(
-                cert_data,
-                default_backend()
-            )
+            cert = x509.load_pem_x509_certificate(cert_data, default_backend())
 
         return cert
 
@@ -44,11 +45,9 @@ class CertificateGenerator:
     def load_key(self, key_path, password=None):
         with open(key_path, "rb") as f:
             key_data = f.read()
-            key = serialization.load_pem_private_key(
-                data=bytes(key_data),
-                password=password,
-                backend=default_backend()
-            )
+            key = serialization.load_pem_private_key(data=bytes(key_data),
+                                                     password=password,
+                                                     backend=default_backend())
 
         return key
 
@@ -60,15 +59,19 @@ class CertificateGenerator:
             encryption = serialization.BestAvailableEncryption(password)
 
         with open(key_path, 'wb') as f:
-            f.write(key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=encryption
-            ))
+            f.write(
+                key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    encryption_algorithm=encryption))
 
         os.chmod(key_path, 0o600)
 
-    def get_cert(self, cert_name='entity', node_cert_path='', key_pass=None, sa_names=None,
+    def get_cert(self,
+                 cert_name='entity',
+                 node_cert_path='',
+                 key_pass=None,
+                 sa_names=None,
                  issuer=None):
         """
         Creates self signed CA certificates or end-entity certificates.
@@ -95,11 +98,9 @@ class CertificateGenerator:
         cert_path = base_path / cert_file
         key_path = base_path / key_file
 
-        cert_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=4096,
-            backend=default_backend()
-        )
+        cert_key = rsa.generate_private_key(public_exponent=65537,
+                                            key_size=4096,
+                                            backend=default_backend())
 
         self.__store_key(cert_key, key_path, key_pass)
 
@@ -118,25 +119,18 @@ class CertificateGenerator:
             issuer_cert = self.load_cert(issuer[0])
             cert_issuer_subject = issuer_cert.subject
             issuer_key = self.load_key(issuer[1],
-                                       issuer[2] if len(issuer) > 2
-                                       else None)
+                                       issuer[2] if len(issuer) > 2 else None)
         else:
             cert_issuer_subject = cert_subject
             issuer_key = cert_key
 
-        cert = x509.CertificateBuilder().subject_name(
-            cert_subject
-        ).issuer_name(
-            cert_issuer_subject
-        ).public_key(
-            cert_key.public_key()
-        ).serial_number(
-            x509.random_serial_number()
-        ).not_valid_before(
-            datetime.datetime.utcnow()
-        ).not_valid_after(
-            datetime.datetime.utcnow() + datetime.timedelta(days=10 * 365)
-        )
+        cert = x509.CertificateBuilder().subject_name(cert_subject).issuer_name(
+            cert_issuer_subject).public_key(
+                cert_key.public_key()).serial_number(
+                    x509.random_serial_number()).not_valid_before(
+                        datetime.datetime.utcnow()).not_valid_after(
+                            datetime.datetime.utcnow() +
+                            datetime.timedelta(days=10 * 365))
 
         cert = cert.add_extension(
             x509.BasicConstraints(ca=True if issuer is None else False,
@@ -148,10 +142,7 @@ class CertificateGenerator:
         for name in sa_names:
             try:
                 converted_names.append(
-                    x509.IPAddress(
-                        ipaddress.ip_address(name)
-                    )
-                )
+                    x509.IPAddress(ipaddress.ip_address(name)))
             except ValueError:
                 converted_names.append(x509.DNSName(name))
 

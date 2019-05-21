@@ -10,9 +10,11 @@ from .gen_stores import KeystoreGenerator
 
 @click.command()
 @click.argument('nodes', nargs=-1)
-@click.option('-d', '--output-directory',
-              help='Directory to put artifacts in. This output_directory must not exist.',
-              default='./artifacts/')
+@click.option(
+    '-d',
+    '--output-directory',
+    help='Directory to put artifacts in. This output_directory must not exist.',
+    default='./artifacts/')
 def app(nodes, output_directory):
     """
     Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
@@ -47,18 +49,24 @@ def app(nodes, output_directory):
         for node in nodes:
             node_path_name = 'node_' + node.replace('.', '_')
             client_cert_path, client_key_path = cert_generator.get_cert(
-                cert_name='client', node_cert_path=node_path_name, issuer=(root_cert_path, root_key_path),
+                cert_name='client',
+                node_cert_path=node_path_name,
+                issuer=(root_cert_path, root_key_path),
                 sa_names=sans + [node])
             server_cert_path, server_key_path = cert_generator.get_cert(
-                cert_name='server', node_cert_path=node_path_name, issuer=(root_cert_path, root_key_path),
+                cert_name='server',
+                node_cert_path=node_path_name,
+                issuer=(root_cert_path, root_key_path),
                 sa_names=sans + [node])
 
             store_generator.create_entitystore(client_cert_path,
                                                client_key_path,
-                                               store_name='clientstore', node_cert_path=node_path_name)
+                                               store_name='clientstore',
+                                               node_cert_path=node_path_name)
             store_generator.create_entitystore(server_cert_path,
                                                server_key_path,
-                                               store_name='serverstore', node_cert_path=node_path_name)
+                                               store_name='serverstore',
+                                               node_cert_path=node_path_name)
             os.remove(server_cert_path)
             os.remove(server_key_path)
 

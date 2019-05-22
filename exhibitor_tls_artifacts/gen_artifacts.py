@@ -1,11 +1,10 @@
 import click
 import os
 import shutil
-import sys
-from pathlib import Path
 
 from .gen_certificates import CertificateGenerator
 from .gen_stores import KeystoreGenerator
+from .validators import validate_dir_missing
 
 
 @click.command()
@@ -14,18 +13,14 @@ from .gen_stores import KeystoreGenerator
     '-d',
     '--output-directory',
     help='Directory to put artifacts in. This output_directory must not exist.',
-    default='./artifacts/')
+    default='./artifacts/',
+    callback=validate_dir_missing)
 def app(nodes, output_directory):
     """
     Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
     of a space seperated list of master ip addresses. See
     https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
     """
-    output_directory = Path(output_directory)
-    if output_directory.exists():
-        raise click.BadOptionUsage(
-            message='{} already exists.'.format(output_directory))
-
     if not nodes:
         raise click.BadArgumentUsage('No nodes have been provided.')
 

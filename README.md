@@ -51,8 +51,9 @@ Usage: exhibitor-tls-artifacts [OPTIONS] [NODES]...
   https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
 
 Options:
-  -d, --output-directory TEXT  Directory to put artifacts in.
-  --help          Show this message and exit.
+  -d, --output-directory TEXT  Directory to put artifacts in. This
+                               output_directory must not exist.
+  --help                       Show this message and exit.
 ```
 
 ## Artifact Usage

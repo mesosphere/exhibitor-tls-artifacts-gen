@@ -14,3 +14,7 @@ exhibitor-tls-artifacts: docker-image templater
 	chmod +x exhibitor-tls-artifacts
 
 build: exhibitor-tls-artifacts
+
+.PHONY: docker-image
+push-docker: docker-image
+	docker push $(DOCKER_IMAGE)

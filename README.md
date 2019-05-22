@@ -32,7 +32,7 @@ environment using `virtualenv`.
 
 2) Create a virtual environment (`Python3.4` is required) :
     ```sh
-    virualenv -p python3.4 <name of environment>
+    virualenv -p python3.6 <name of environment>
     ```
 
 To install the `exhibitor-tls-artifacts` package, from the same directory as

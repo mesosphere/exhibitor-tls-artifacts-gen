@@ -35,6 +35,14 @@ task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89
 
     stage("release") {
         when { tag "" }
-        sh "echo todo"
+        withCredentials([
+            [
+                $class: 'StringBinding',
+                credentialsId: 'd146870f-03b0-4f6a-ab70-1d09757a51fc',
+                variable: 'GITHUB_TOKEN',
+            ]
+        ]) {
+            sh 'make release'
+        }
     }
 }

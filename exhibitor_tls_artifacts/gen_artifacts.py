@@ -7,7 +7,7 @@ from .gen_stores import KeystoreGenerator
 from .validators import validate_dir_missing
 
 
-@click.command()
+@click.command(name='exhibitor-tls-artifacts')
 @click.argument('nodes', nargs=-1)
 @click.option(
     '-d',
@@ -18,7 +18,7 @@ from .validators import validate_dir_missing
 def app(nodes, output_directory):
     """
     Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
-    of a space seperated list of master ip addresses. See
+    of a space separated list of master ip addresses. See
     https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
     """
     if not nodes:

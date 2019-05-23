@@ -38,7 +38,7 @@ class CertificateGenerator:
         return cert
 
     def __store_cert(self, cert, cert_path):
-        os.makedirs(cert_path.parent, mode=0o700, exist_ok=True)
+        cert_path.parent.mkdir(mode=0o700, exist_ok=True)
         with open(cert_path, 'wb') as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
 
@@ -52,7 +52,7 @@ class CertificateGenerator:
         return key
 
     def __store_key(self, key, key_path, password=None):
-        os.makedirs(key_path.parent, mode=0o700, exist_ok=True)
+        key_path.parent.mkdir(mode=0o700, exist_ok=True)
         if password is None:
             encryption = serialization.NoEncryption()
         else:

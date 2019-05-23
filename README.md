@@ -30,7 +30,7 @@ environment using `virtualenv`.
     pip install virtualenv
     ```
 
-2) Create a virtual environment (`Python3.4` is required) :
+2) Create a virtual environment (`Python3.6` is required) :
     ```sh
     virualenv -p python3.6 <name of environment>
     ```
@@ -39,6 +39,25 @@ To install the `exhibitor-tls-artifacts` package, from the same directory as
 this file, run the following:
 ```sh
 pip install --editable .
+```
+
+## Docker image
+
+This script is published as a docker container under `mesosphere/exhibitor-tls-artifacts-gen`
+repository. It is possible to launch script without installing Python, OpenSSL or Java
+dependencies with docker:
+
+```
+docker run -it --rm mesosphere/exhibitor-tls-artifacts-gen --help
+```
+
+For a convenience there is a bash  script that can be downloaded from
+GitHub release pages and invoked directly.
+
+```sh
+curl -O https://github.com/mesosphere/exhibitor-tls-artifacts-gen/releases/latest/download/exhibitor-tls-artifacts
+chmod +x exhibitor-tls-artifacts
+./exhibitor-tls-artifacts --help
 ```
 
 ## Script Usage
@@ -81,5 +100,18 @@ To run the tests first follow the instructions under
 [Installation](#installation) to get all the required dependencies. Then run:
 
 ```sh
-pytest tests/
+make test
+```
+
+## Release
+
+A release is created by making new git tag that should match version in `setup.py` file.
+When a new tag is pushed to the main repo the CI will make a build and create a new release in GitHub.
+A tag should be pointing to a commit that has been merged to `master` branch.
+
+Example:
+
+```sh
+git tag v0.2
+git push --tags
 ```

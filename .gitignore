@@ -1,3 +1,7 @@
 # Editor specific files
 .vscode
 __pycache__
+
+templater
+exhibitor-tls-artifacts
+github-release

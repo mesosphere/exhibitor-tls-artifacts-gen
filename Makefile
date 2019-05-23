@@ -9,12 +9,19 @@ templater:
 	curl -L https://raw.githubusercontent.com/johanhaleby/bash-templater/master/templater.sh -o templater
 	chmod +x templater
 
-exhibitor-tls-artifacts: docker-image templater
+exhibitor-tls-artifacts: templater
 	bash -c "DOCKER_IMAGE=$(DOCKER_IMAGE) ./templater build/exhibitor-tls-artifacts.tpl > exhibitor-tls-artifacts"
 	chmod +x exhibitor-tls-artifacts
 
-build: exhibitor-tls-artifacts
+build: docker-image exhibitor-tls-artifacts
+
+test:
+	pytest -vvv -s tests/
 
 .PHONY: docker-image
-push-docker: docker-image
+docker-push: docker-image
 	docker push $(DOCKER_IMAGE)
+
+.PHONY: docker-test
+docker-test: docker-image
+	docker run --entrypoint /bin/sh -t --rm $(DOCKER_IMAGE) -c 'make test'

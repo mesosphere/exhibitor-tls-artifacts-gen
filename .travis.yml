@@ -1,31 +1,13 @@
 sudo: required
 language: python
-services:
-- docker
 python:
 - '3.6'
 env:
   matrix:
   - TEST_DIR="tests/"
-  # TODO(mh): Replace with mesosphere owned credentials
-  - DOCKER_USERNAME=mhrabovcin
-  - secure: s5nrRPlDSFHku2hCPzoYwLBsKOnu5Nr4VPMkE6uEV2l3fgyfeHgSImMN7vos+PgDLUepv1n2ojHNPHw7xmzmp4cWpBTIE35yX87+kXw5uBneqKu1mGu4sChG8bH6ADNTBlKTdWOdE6qpSUz0rcGiBFGxmr7eJGcDaQpOTRpNWcFT29hoN14Rl03tH/Pd6ZvT2KKMGXJfoGXwmu9lOlNJGZWvSy0I8UHC9kaZbSdKW8p+nV+hL8HAFs5U9n0uJ+hV/S1QG3BWaTdssxnyu7UrHqrLm51IRGEs/xnBEitUWPcbwbMmxgnLsiIX/juP3D8KS/rr2dVVJZPD2eetZZsCNBhhz3M0PLWdLhD4cI0m/abxnOn/cZ4HPVJZ2/2EyA+5i5I773aP0PoUcfgmzhRxq6FxhunS5leKpoEGIYTj7KPE9XqpNbsW2tDBOoUecPci4Y+VoRQtDUtIAuW6xS6wgbemSaMIkXtAVdEcIBJotuNiusLyAdIqj0bwEESCTmLLAhxaXcn2MvG4b6TMEAHPDyXzKnlaIL6AQFDHuWk6GTMYklUB3/hd0TR0zoMN4TqkH97ZDBfPG55X6Dt5ptjACLEcF2dHYXgEKMDhiwygQK2ambBoGezt51C2v0tN2YViA33fzCXO4ttbk/v1qswjq1D/+bjPAlkdHVFSIZgXlnM=
 before_install:
 - travis_retry pip install --upgrade pip
 install:
 - travis_retry pip install --upgrade --editable .
 script:
 - pytest -vvv "$TEST_DIR"
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- make build
-- make push-docker
-deploy:
-  provider: releases
-  # TODO(mh): Replace with mesosphere owned github token
-  # This api_key is tied to `mhrabovcin` github account
-  api_key:
-    secure: "XU1eJYpE/e9W/WbJ6BQMQ5unlCDPvgzTidPSppLVQXrlgWqIPISDeUULVRXRCBPKueg4+zge07qu+1TZ+tKPOj6psl199FwlT5cFVueGMcgUDn4A5fRDP7Hc+dhy95epEOq27JWWMCC2FMXCEYMVSGQvygFkezrzeXmzk9BZf7vzG5ACNVylAvujC1iRS0qdCoIQRmzf9PxqcgxZ+HJA7jsoB/8+zdGmLJrrbOIVjU7EHi87CzJ2ObBEynHwlbdTFx9oSV3AmbzjyibLKd4BGhrAMOCRd+66NgpPTJJnhxWFPoNb6mToLO0s5gdHpjtRFcQjMaWZYgkdjHepmcFPHSpUNMJHEOj0ur5XHqOgCXga0qRbHT1NzO2VycQmB83xCPF1C92dVDjXd4kwXULeltt2VicMFIMVWewl77xmqmq7FsX1l+hIqtVLcGgCur4zOLEp6KxAKE7Ol7BqprPAaPgAmk6PZ8jTkIGU3fno3s1mBgwdUcuPEPTPDZ+8oGHnlj/wEYXxy6hAv+PN6NeWVEE2TmfhOubm0AcNCqcARBXykiZeNGN+QRG/p2gQfJDAG4Rz2lA1aQ813iVaQZsJXWsNuncKoVyXvCIGjhqJ+8i6IgED8xbvJBkunJ0iZVPVb36IfqcUloq6RoGYORd60FCgS7V/DDnZZ9oAzRSPkO8="
-  file: "exhibitor-tls-artifacts"
-  skip_cleanup: true
-  on:
-    tags: true

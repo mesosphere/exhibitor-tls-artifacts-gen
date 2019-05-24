@@ -36,7 +36,9 @@ docker-test: docker-image
 
 github-release:
 	curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 -o github-release.tar.bz2
-	tar xzf github-release.tar.bz2
+	# Our jenkins doesn't support .tar.bz2 archivves
+	bunzip2 -c < github-release.tar.bz2 | gzip -c > github-release.tar.gz
+	tar xzf github-release.tar.gz
 	mv bin/linux/amd64/github-release .
 	rm -rf bin github-release.tar.bz2
 

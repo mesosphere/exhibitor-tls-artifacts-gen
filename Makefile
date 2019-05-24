@@ -14,7 +14,7 @@ docker-image:
 	docker build -f build/Dockerfile -t $(DOCKER_IMAGE) .
 
 templater:
-	curl -L https://raw.githubusercontent.com/johanhaleby/bash-templater/master/templater.sh -o templater
+	curl -L https://raw.githubusercontent.com/johanhaleby/bash-templater/8441dfda092b21d45925ff3d0b76f80e4098c19c/templater.sh -o templater
 	chmod +x templater
 
 $(BIN): templater
@@ -43,4 +43,4 @@ github-release:
 release: github-release build
 	./github-release release -u $(USER) -r $(REPO) \
 		-t $(TAG) -n $(TAG)
-	./github-release upload -u $(USER) -r $(REPO) -t $(TAG) -n $(TAG) -f $(BIN)
+	./github-release upload -u $(USER) -r $(REPO) -t $(TAG) -n $(BIN) -f $(BIN)

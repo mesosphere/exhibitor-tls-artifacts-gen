@@ -44,11 +44,11 @@ pip install --editable .
 ## Docker image
 
 This script is published as a docker container under `mesosphere/exhibitor-tls-artifacts-gen`
-repository. It is possible to launch script without installing Python, OpenSSL or Java
+repository. It is possible to launch this script without installing Python, OpenSSL or Java
 dependencies with docker:
 
 ```
-docker run -it --rm mesosphere/exhibitor-tls-artifacts-gen --help
+docker run -it --rm -v $(pwd):/build --workdir /build mesosphere/exhibitor-tls-artifacts-gen --help
 ```
 
 For a convenience there is a bash  script that can be downloaded from
@@ -59,6 +59,12 @@ curl -O https://github.com/mesosphere/exhibitor-tls-artifacts-gen/releases/lates
 chmod +x exhibitor-tls-artifacts
 ./exhibitor-tls-artifacts --help
 ```
+
+There is a limitation when using the `exhibitor-tls-artifacts` bash script.
+The output of running this script is a directory that contains TLS artifacts (certificates, private keys and root CA certificate).
+The script mounts current working directory the container with the script.
+Only paths relative to the current working directory can be used as `--output-directory`.
+Using absolute path will result in artifacts being generated in the container and destroyed when container exits.
 
 ## Script Usage
 

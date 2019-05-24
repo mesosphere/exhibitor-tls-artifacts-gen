@@ -7,6 +7,6 @@ def validate_dir_missing(ctx, param, value):
     path = Path(value)
 
     if path.exists():
-        raise click.BadParameter(message="Artifacts directory cannot exist!")
+        raise click.BadParameter(message="Artifacts directory {} already exists.".format(value))
 
     return path

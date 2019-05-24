@@ -10,6 +10,10 @@ task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89
         user_is_authorized(master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#dcos-security-ci')
     }
 
+    stage('Checkout') {
+        checkout scm
+    }
+
     stage("build") {
         sh 'make build'
     }

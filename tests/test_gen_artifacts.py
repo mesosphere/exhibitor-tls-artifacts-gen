@@ -1,5 +1,6 @@
 import stat
 import textwrap
+import re
 from pathlib import Path
 
 import click
@@ -50,14 +51,11 @@ class TestCLI:
 
     def test_dir_exists(self):
         """ Test error case when the output directory already exists """
+        rgx = re.compile("^Error: Invalid value for \"-d\" / \"--output-directory\": "
+                         "Artifacts location .* already exists\\.$")
         runner = click.testing.CliRunner()
 
         with runner.isolated_filesystem() as temp:
-            err = textwrap.dedent("""\
-            Usage: exhibitor-tls-artifacts [OPTIONS] [NODES]...
-
-            Error: Invalid value for "-d" / "--output-directory": Artifacts directory cannot exist!
-            """)
             temp_path = Path(temp)
             output_dir = temp_path / 'exists'
             output_dir.mkdir()
@@ -65,20 +63,22 @@ class TestCLI:
                                    args=['-d', output_dir, '10.10.10.10'],
                                    catch_exceptions=False)
             assert result.exit_code == 2
-            assert err == result.stdout
+            for line in result.stdout.splitlines():
+                if rgx.match(line):
+                    return
+            raise Exception('CLI error output is incorrect: {}'.format(result.stdout))
 
     def test_no_nodes(self):
         """ Test error case if no arguments are provided """
         err = textwrap.dedent("""\
         Usage: exhibitor-tls-artifacts [OPTIONS] [NODES]...
 
-        Error: Invalid value for "-d" / "--output-directory": Artifacts directory cannot exist!
+        Error: No nodes have been provided.
         """)
         runner = click.testing.CliRunner()
         result = runner.invoke(app, catch_exceptions=False)
         assert result.exit_code == 2
-        print(result.stdout)
-        assert err in result.stdout
+        assert err == result.stdout
 
     def test_help(self):
         """ Tests if there are any changes to the help output. This

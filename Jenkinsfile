@@ -4,9 +4,9 @@
 
 def master_branches = ['master'] as String[]
 
-pipeline {
-
 task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#dcos-security-ci') {
+
+    pipeline {
 
     stage("Verify author") {
         user_is_authorized(master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#dcos-security-ci')
@@ -53,6 +53,6 @@ task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89
             sh 'make release'
         }
     }
-}
 
+    }
 }

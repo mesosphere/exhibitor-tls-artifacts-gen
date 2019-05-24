@@ -2,6 +2,8 @@
 
 @Library('sec_ci_libs@v2-latest') _
 
+def master_branches = ['master'] as String[]
+
 task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#dcos-security-ci') {
 
     stage("Verify author") {

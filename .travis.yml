@@ -1,18 +1,13 @@
-sudo: "required"
-
-language: "python"
-
+sudo: required
+language: python
 python:
-    - "3.4"
-
+- '3.6'
 env:
-    - TEST_DIR="tests/"
-
+  matrix:
+  - TEST_DIR="tests/"
 before_install:
-    - "travis_retry pip install --upgrade pip"
-
+- travis_retry pip install --upgrade pip
 install:
-    - "travis_retry pip install --upgrade --editable ."
-
+- travis_retry pip install --upgrade --editable .
 script:
-    - 'pytest -vvv "$TEST_DIR"'
+- pytest -vvv "$TEST_DIR"

@@ -69,20 +69,23 @@ Using absolute path will result in artifacts being generated in the container an
 ## Script Usage
 
 ```sh
-exhibitor-tls-artifacts [OPTIONS] [SANS]...
+Usage: exhibitor-tls-artifacts [OPTIONS] [NODES]...
 
-Args:
-    SANS: Subject Alternative Names to be put in the end-entity
-              certificates. Can be DNS names or IP addresses.
+  Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
+  of a space seperated list of master ip addresses. See
+  https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
+
 Options:
-  -d, --dir TEXT  Directory to put generated artifacts in.
-                  Default: ./artifacts/ .
-  --help          Show this message and exit.
+  -d, --output-directory TEXT  Directory to put artifacts in. This
+                               output_directory must not exist.
+  --help                       Show this message and exit.
 ```
 
 ## Artifact Usage
 
-All artifacts are found in `./artifacts/` or in the user specified directory.
+All artifacts are found in `./artifacts` or in the user specified directory. This
+tool creates sub-directories for each `NODE`. If the node ip address is `10.10.10.10`,
+the artifacts for that node will land in `<artifacts_dir>/node_10_10_10_10/`.
 
 * `clientstore.jks`
     * Contains `client-cert.pem` and `client-key.pem`.

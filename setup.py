@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1'
+VERSION = '0.2'
 
 with open('requirements.txt') as requirements:
     INSTALL_REQUIRES = []
@@ -19,8 +19,8 @@ setup(
     description='Exhibitor TLS artifact generation script',
     long_description=LONG_DESCRIPTION,
     install_requires=INSTALL_REQUIRES,
-    author='Rubin Deliallisi',
-    author_email="rdeliallisi@mesosphere.com",
+    author='Mesosphere Inc.',
+    author_email="security@mesosphere.com",
     url="https://mesosphere.com",
     keywords='exhibitor tls artifact mesosphere',
     entry_points={

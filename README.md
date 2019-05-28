@@ -16,9 +16,9 @@ that can pick up these artifacts and talk to the ensemble.
 * [Tests](#tests)
 
 ## System Requirements
-
-1) `Java 8` must be installed.
-2) `OpenSSL 1.x.y` must be installed.
+1) `Python 3.5+` must be installed.
+2) `Java 8` must be installed.
+3) `OpenSSL 1.x.y` must be installed.
 
 ## Installation
 
@@ -51,13 +51,12 @@ dependencies with docker:
 docker run -it --rm -v $(pwd):/build --workdir /build mesosphere/exhibitor-tls-artifacts-gen --help
 ```
 
-For a convenience there is a bash  script that can be downloaded from
-GitHub release pages and invoked directly.
+For convenience, a bash script can be downloaded from the GitHub release page and invoked directly.
 
 ```sh
 curl -O https://github.com/mesosphere/exhibitor-tls-artifacts-gen/releases/latest/download/exhibitor-tls-artifacts
 chmod +x exhibitor-tls-artifacts
-./exhibitor-tls-artifacts --help
+./exhibitor-tls-artifacts -- --help
 ```
 
 There is a limitation when using the `exhibitor-tls-artifacts` bash script.
@@ -65,6 +64,42 @@ The output of running this script is a directory that contains TLS artifacts (ce
 The script mounts current working directory the container with the script.
 Only paths relative to the current working directory can be used as `--output-directory`.
 Using absolute path will result in artifacts being generated in the container and destroyed when container exits.
+
+If it is necessary to store the artifacts in a directory other than the current working directory
+the bash script can take an extra parameter  `-b, --bind-directory`. For example:
+
+```
+$ ./exhibitor-tls-artifacts -b /tmp 192.168.0.1 192.168.0.2 192.168.0.3
+
+$ sudo tree /tmp/artifacts/
+/tmp/artifacts/
+├── node_192_168_0_1
+│   ├── client-cert.pem
+│   ├── client-key.pem
+│   ├── clientstore.jks
+│   ├── root-cert.pem
+│   ├── serverstore.jks
+│   └── truststore.jks
+├── node_192_168_0_2
+│   ├── client-cert.pem
+│   ├── client-key.pem
+│   ├── clientstore.jks
+│   ├── root-cert.pem
+│   ├── serverstore.jks
+│   └── truststore.jks
+├── node_192_168_0_3
+│   ├── client-cert.pem
+│   ├── client-key.pem
+│   ├── clientstore.jks
+│   ├── root-cert.pem
+│   ├── serverstore.jks
+│   └── truststore.jks
+├── root-cert.pem
+└── truststore.jks
+
+3 directories, 20 files
+
+```
 
 ## Script Usage
 

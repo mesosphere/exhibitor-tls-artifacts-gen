@@ -40,7 +40,7 @@ task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89
     }
 
     stage("release") {
-        if (buildingTag()) {
+        if (env.TAG_NAME) {
             withCredentials([
                 [
                     $class: 'StringBinding',

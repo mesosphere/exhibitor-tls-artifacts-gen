@@ -44,7 +44,7 @@ task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89
             withCredentials([
                 [
                     $class: 'StringBinding',
-                    credentialsId: 'd146870f-03b0-4f6a-ab70-1d09757a51fc',
+                    credentialsId: 'c674acda-2a3b-497c-88f4-ff5c16f7edc0',
                     variable: 'GITHUB_TOKEN',
                 ]
             ]) {

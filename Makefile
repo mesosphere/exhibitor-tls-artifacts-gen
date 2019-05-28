@@ -43,6 +43,6 @@ github-release:
 	rm -rf bin github-release.tar.bz2
 
 release: github-release build
-	./github-release release -u $(USER) -r $(REPO) \
+	./github-release -v release -u $(USER) -r $(REPO) \
 		-t $(TAG) -n $(TAG)
-	./github-release upload -u $(USER) -r $(REPO) -t $(TAG) -n $(BIN) -f $(BIN)
+	./github-release -v upload -u $(USER) -r $(REPO) -t $(TAG) -n $(BIN) -f $(BIN)

@@ -2,10 +2,16 @@
 
 @Library('sec_ci_libs@v2-latest') _
 
+def master_branches = ["master", ] as String[]
+
 task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#dcos-security-ci') {
 
     stage("Verify author") {
         user_is_authorized(master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#dcos-security-ci')
+    }
+
+    stage('Checkout') {
+        checkout scm
     }
 
     stage("build") {
@@ -28,21 +34,22 @@ task_wrapper('mesos-sec', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89
             credentialsId: '4551c307-10ae-40f9-a0ac-f1bb44206b5b',
             variable: 'DOCKER_HUB_EMAIL']
         ]) {
-            sh "docker login -u '${env.DOCKER_HUB_USERNAME}' -p '${env.DOCKER_HUB_PASSWORD}'"
+            sh "echo ${env.DOCKER_HUB_PASSWORD} | docker login -u '${env.DOCKER_HUB_USERNAME}' --password-stdin"
         }
         sh 'make docker-push'
     }
 
     stage("release") {
-        when { tag "" }
-        withCredentials([
-            [
-                $class: 'StringBinding',
-                credentialsId: 'd146870f-03b0-4f6a-ab70-1d09757a51fc',
-                variable: 'GITHUB_TOKEN',
-            ]
-        ]) {
-            sh 'make release'
+        if (env.TAG_NAME) {
+            withCredentials([
+                [
+                    $class: 'StringBinding',
+                    credentialsId: 'c674acda-2a3b-497c-88f4-ff5c16f7edc0',
+                    variable: 'GITHUB_TOKEN',
+                ]
+            ]) {
+                sh 'make release'
+            }
         }
     }
 }

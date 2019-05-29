@@ -16,7 +16,7 @@ that can pick up these artifacts and talk to the ensemble.
 * [Tests](#tests)
 
 ## System Requirements
-1) `Python 3.5+` must be installed.
+1) `Python 3.6` must be installed.
 2) `Java 8` must be installed.
 3) `OpenSSL 1.x.y` must be installed.
 

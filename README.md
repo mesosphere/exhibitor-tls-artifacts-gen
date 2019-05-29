@@ -56,7 +56,7 @@ For convenience, a bash script can be downloaded from the GitHub release page an
 ```sh
 curl -O https://github.com/mesosphere/exhibitor-tls-artifacts-gen/releases/latest/download/exhibitor-tls-artifacts
 chmod +x exhibitor-tls-artifacts
-./exhibitor-tls-artifacts -- --help
+./exhibitor-tls-artifacts --help
 ```
 
 There is a limitation when using the `exhibitor-tls-artifacts` bash script.

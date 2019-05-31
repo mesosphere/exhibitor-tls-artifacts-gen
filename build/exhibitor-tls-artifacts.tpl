@@ -26,4 +26,4 @@ eval set -- "$PARAMS"
 # `exhibitor-tls-artifacts -d /tmp 10.0.0.1 10.0.0.2`, then the
 # resulting output directory would be `/tmp/artifacts`
 
-docker run -it --rm -v ${BIND_DIRECTORY}:/build --workdir=/build {{DOCKER_IMAGE}} ${PARAMS}
+docker run --rm -v ${BIND_DIRECTORY}:/build --workdir=/build {{DOCKER_IMAGE}} ${PARAMS}

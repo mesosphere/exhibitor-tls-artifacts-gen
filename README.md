@@ -48,13 +48,13 @@ repository. It is possible to launch this script without installing Python, Open
 dependencies with docker:
 
 ```
-docker run -it --rm -v $(pwd):/build --workdir /build mesosphere/exhibitor-tls-artifacts-gen --help
+docker run -it --rm -v $(pwd):/build --workdir /build mesosphere/exhibitor-tls-artifacts-gen:0.0.3 --help
 ```
 
 For convenience, a bash script can be downloaded from the GitHub release page and invoked directly.
 
 ```sh
-curl -O https://github.com/mesosphere/exhibitor-tls-artifacts-gen/releases/latest/download/exhibitor-tls-artifacts
+curl -O https://github.com/mesosphere/exhibitor-tls-artifacts-gen/releases/download/0.0.3/exhibitor-tls-artifacts
 chmod +x exhibitor-tls-artifacts
 ./exhibitor-tls-artifacts --help
 ```
@@ -157,5 +157,12 @@ Example:
 
 ```sh
 git tag v0.2
-git push --tags
+git push origin v0.2
 ```
+
+When a new release is created, be sure to update the URL used in the E2E test:
+https://github.com/mesosphere/dcos-enterprise/blob/master/test-e2e/test_exhibitor.py
+
+Also, the DC/OS documentation should also be updated with the correct release tag:
+
+https://github.com/mesosphere/dcos-docs-site/blob/staging/exhibitor-tls/pages/1.13/security/ent/tls-ssl/exhibitor/index.md

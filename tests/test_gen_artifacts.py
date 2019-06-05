@@ -89,7 +89,7 @@ class TestCLI:
 
               Generates Admin Router and Exhibitor TLS artifacts. NODES should consist of
               a space separated list of master ip addresses. See
-              https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
+              https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor/
 
             Options:
               -d, --output-directory TEXT  Directory to put artifacts in. This

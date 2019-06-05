@@ -19,7 +19,7 @@ def app(nodes, output_directory):
     """
     Generates Admin Router and Exhibitor TLS artifacts. NODES should consist
     of a space separated list of master ip addresses. See
-    https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor-tls/
+    https://docs.mesosphere.com/1.13/security/ent/tls-ssl/exhibitor/
     """
     if not nodes:
         raise click.BadArgumentUsage('No nodes have been provided.')

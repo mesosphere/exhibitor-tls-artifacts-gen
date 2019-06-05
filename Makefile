@@ -12,6 +12,7 @@ BIN := exhibitor-tls-artifacts
 .PHONY: docker-image
 docker-image:
 	docker build -f build/Dockerfile -t $(DOCKER_IMAGE) .
+	docker tag ${DOCKER_IMAGE} ${USER}/${REPO}:latest
 
 templater:
 	curl -L https://raw.githubusercontent.com/johanhaleby/bash-templater/8441dfda092b21d45925ff3d0b76f80e4098c19c/templater.sh -o templater
@@ -29,6 +30,7 @@ test:
 .PHONY: docker-image
 docker-push: docker-image
 	docker push $(DOCKER_IMAGE)
+	docker push ${USER}/${REPO}:latest
 
 .PHONY: docker-test
 docker-test: docker-image

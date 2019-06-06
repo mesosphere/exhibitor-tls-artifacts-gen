@@ -72,22 +72,22 @@ the bash script can take an extra parameter  `-b, --bind-directory`. For example
 $ ./exhibitor-tls-artifacts -b /tmp 192.168.0.1 192.168.0.2 192.168.0.3
 
 $ sudo tree /tmp/artifacts/
-/tmp/artifacts/
-├── node_192_168_0_1
+./artifacts/
+├── 192.168.1.1
 │   ├── client-cert.pem
 │   ├── client-key.pem
 │   ├── clientstore.jks
 │   ├── root-cert.pem
 │   ├── serverstore.jks
 │   └── truststore.jks
-├── node_192_168_0_2
+├── 192.168.1.2
 │   ├── client-cert.pem
 │   ├── client-key.pem
 │   ├── clientstore.jks
 │   ├── root-cert.pem
 │   ├── serverstore.jks
 │   └── truststore.jks
-├── node_192_168_0_3
+├── 192.168.1.3
 │   ├── client-cert.pem
 │   ├── client-key.pem
 │   ├── clientstore.jks
@@ -98,6 +98,7 @@ $ sudo tree /tmp/artifacts/
 └── truststore.jks
 
 3 directories, 20 files
+
 
 ```
 
@@ -120,7 +121,7 @@ Options:
 
 All artifacts are found in `./artifacts` or in the user specified directory. This
 tool creates sub-directories for each `NODE`. If the node ip address is `10.10.10.10`,
-the artifacts for that node will land in `<artifacts_dir>/node_10_10_10_10/`.
+the artifacts for that node will land in `<artifacts_dir>/10.10.10.10/`.
 
 * `clientstore.jks`
     * Contains `client-cert.pem` and `client-key.pem`.

@@ -34,7 +34,7 @@ class TestCLI:
                                    catch_exceptions=False)
 
             assert result.exit_code == 0
-            artifact_path = temp_path / 'artifacts' / 'node_10_10_10_10'
+            artifact_path = temp_path / 'artifacts' / '10.10.10.10'
             assert artifact_path.exists()
             self._validate_files(artifact_path)
 
@@ -47,7 +47,7 @@ class TestCLI:
                                catch_exceptions=False)
 
         assert result.exit_code == 0
-        self._validate_files(new_path / 'node_10_10_10_10')
+        self._validate_files(new_path / '10.10.10.10')
 
     def test_dir_exists(self):
         """ Test error case when the output directory already exists """

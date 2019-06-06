@@ -42,7 +42,7 @@ def app(nodes, output_directory):
         root_truststore = store_generator.create_truststore([root_cert_path])
 
         for node in nodes:
-            node_path_name = 'node_' + node.replace('.', '_')
+            node_path_name = str(node)
             client_cert_path, client_key_path = cert_generator.get_cert(
                 cert_name='client',
                 node_cert_path=node_path_name,
